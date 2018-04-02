@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>회원가입</title>
+<style>
+div {
+	font-size: 10pt;
+	color: blue;
+}
+</style>
+</head>
+<body>
+	<h1>
+		<a><img src='icon/home_icon.png' alt='home' width='35' /></a>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i><ins>회원가입</ins></i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		<a><img src='icon/menu_icon.png' alt='menu' width='35' /></a>
+	</h1>
+
+	<input name="id" id="id" value="아이디">
+	<button name="idCheck">중복확인</button>
+	<br>
+	<div></div>
+	<input type="text" name="pw" id="pw1" value="비밀번호">
+	<br>
+	<div></div>
+	<input type="text" id="pw2" value="비밀번호 확인">
+	<br>
+	<div></div>
+	<!-- 비밀번호 확인은 서버에 안넘김 -->
+	<input name="name" value="이름" id="name">
+	<br>
+	<div></div>
+	<input name="nickname" value="닉네임" id="nickname">
+	<button name="nickCheck">중복확인</button>
+	<br>
+	<div></div>
+	<input type="radio" name="gender" checked="checked" value="M" id="genderM">남자
+	<input type="radio" name="gender" value="F" id="genderF">여자
+	<br> 생년월일
+	<select name="birthyear" id="birthyear">
+	</select>
+	<select name="birthmonth" id="birthmonth">
+	</select>
+	<select name="birthday" id="birthday">
+		<option>선택</option>
+	</select>
+	<br> 거주지역
+	<select name="city" id="city">
+	</select>
+	<br>
+	<select name="telefront" id="telefront">
+	</select>
+	<input name="teleback" id="teleback" value="번호입력">
+	<button name="teleconfirm">인증</button>
+	<br>
+	<div></div>
+	<input name="email" id="email" value="이메일 주소">
+	<button name="emailCheck">중복확인</button>
+	<br>
+	<div></div>
+	소속동아리
+	<select name="field" id="field">
+	</select>
+	<select name="club" id="club">
+		<option>선택</option>
+	</select>
+	<br>
+	<br>
+	<button>회원가입</button>
+	<button>취소</button>
+
+	<script type="text/javascript">
+		var icons = document.querySelectorAll("a");
+
+		icons[0].href = "000_clubHome.html";
+		icons[1].href = "005_clubMenu.html";
+
+		// id로 태그가져오는 메서드
+		var getTag = function(id) {
+			return document.querySelector("#" + id);
+		}
+
+		// input text, password의 value수정 메서드 ----> onkeydown
+		var textbox = function(id) {
+			return getTag(id).onkeydown = function() {
+				getTag(id).value = "";
+				getTag(id).onkeydown = "";
+			}
+		}
+
+		var pwbox = function(pw) {
+			getTag(pw).onkeydown = function() {
+				getTag(pw).type = "password";
+				getTag(pw).value = "";
+				getTag(pw).onkeydown = "";
+			}
+		}
+
+		textbox("id");
+		textbox("name");
+		textbox("nickname");
+		textbox("teleback");
+		textbox("email");
+		pwbox("pw1");
+		pwbox("pw2");
+
+		//버튼 onclick
+		var divs = document.querySelectorAll("div");
+		var buttons = document.querySelectorAll("button");
+		buttons[0].onclick = function() {
+			alert('이미 있는 아이디입니다.');
+		}
+		buttons[1].onclick = function() {
+			alert('이미 있는 닉네임입니다.');
+		}
+		buttons[2].onclick = function() {
+			alert('인증되었습니다.');
+		}
+		buttons[3].onclick = function() {
+			alert('이미 있는 이메일입니다.');
+		}
+		buttons[4].onclick = function() {
+			var check = true;
+			var selects = document.querySelectorAll("select");
+			for (var i = 0; i < 7; i++) {
+				if (selects[i].value == "선택") {
+					check = false;
+				}
+			}
+			if (check) {
+				var inputs = document.querySelectorAll("input");
+				for (i in inputs) {
+					if (inputs[i].value == "") {
+						check = false;
+					}
+				}
+			}
+
+			if (check) {
+				for (var i = 0; i < 7; i++) {
+					if (divs[i].innerHTML != "") {
+						check = false;
+					}
+				}
+			}
+			if (check) {
+				if (getTag("id").value == "아이디") {
+					check = false;
+				}
+				if (getTag("pw1").value == "비밀번호") {
+					check = false;
+				}
+				if (getTag("pw2").value == "비밀번호 확인") {
+					check = false;
+				}
+				if (getTag("name").value == "이름") {
+					check = false;
+				}
+				if (getTag("nickname").value == "닉네임") {
+					check = false;
+				}
+				if (getTag("teleback").value == "번호입력") {
+					check = false;
+				}
+				if (getTag("email").value == "이메일 주소") {
+					check = false;
+				}
+			}
+			if (check) {
+				alert(getTag("id").value + "님 회원이 되신 걸 환영합니다.")
+			} else {
+				alert('입력하신 정보를 다시 확인해주세요.');
+			}
+		}
+		buttons[5].onclick = function() {
+			alert('정말 취소하시겠습니까?');
+		}
+
+		//input 알림문구 div에 표시
+		getTag("id").onkeyup = function() {
+			if (getTag("id").value.length >= 5
+					&& getTag("id").value.length <= 16) {
+				divs[0].innerHTML = "";
+			} else {
+				divs[0].innerHTML = "아이디는 5~16자";
+			}
+		}
+		getTag("pw1").onkeyup = function() {
+			if (getTag("pw1").value.length >= 8
+					&& getTag("pw1").value.length <= 20) {
+				divs[1].innerHTML = "";
+			} else {
+				divs[1].innerHTML = "비밀번호는 8~20자";
+			}
+		}
+		getTag("pw2").onkeyup = function() {
+			if (getTag("pw2").value == getTag("pw1").value) {
+				divs[2].innerHTML = "";
+			} else {
+				divs[2].innerHTML = "비밀번호가 서로 다릅니다.";
+			}
+		}
+		getTag("name").onkeyup = function() {
+			if (getTag("name").value.length >= 2
+					&& getTag("name").value.length <= 20) {
+				divs[3].innerHTML = "";
+			} else {
+				divs[3].innerHTML = "이름을 정확하게 입력해주세요.";
+			}
+		}
+		getTag("nickname").onkeyup = function() {
+			if (getTag("nickname").value.length >= 2
+					&& getTag("nickname").value.length <= 20) {
+				divs[4].innerHTML = "";
+			} else {
+				divs[4].innerHTML = "닉네임은 2~20자";
+			}
+		}
+		getTag("teleback").onkeyup = function() {
+			if (getTag("teleback").value.length >= 7
+					&& getTag("teleback").value.length <= 8) {
+				divs[5].innerHTML = "";
+			} else {
+				divs[5].innerHTML = "휴대폰번호를 정확하게 입력해주세요.";
+			}
+		}
+		getTag("email").onkeyup = function() {
+			if (getTag("email").value.length > 10) { //임시코드. email정규식(문자@문자.문자)에 맞는 값인지 확인하는 코드 필요.
+				divs[6].innerHTML = "";
+			} else {
+				divs[6].innerHTML = "이메일주소를 정확하게 입력해주세요.";
+			}
+		}
+
+		//select에 option 집어넣는 메서드 + '먼저 선택하세요'
+		var choice = "<option>선택</option>"
+		var list = "";
+		var addOpt = function(option) {
+			return "<option value="+ option + ">" + option + "</option>";
+		}
+		for (var i = 2018; i >= 1920; i--) {
+			list += addOpt(i);
+		}
+		getTag("birthyear").innerHTML = choice + list;
+
+		list = "";
+		for (var i = 1; i <= 12; i++) {
+			list += addOpt(i);
+		}
+		getTag("birthmonth").innerHTML = choice + list;
+
+		var dayOption = function() {
+			list = "";
+			var max = 31;
+
+			switch (getTag("birthmonth").value) {
+			case '2':
+				max = 28;
+				break;
+			case '4':
+			case '6':
+			case '9':
+			case '11':
+				max = 30;
+				break;
+			}
+
+			for (var i = 1; i <= max; i++) {
+				list += addOpt(i);
+			}
+			getTag("birthday").innerHTML = choice + list;
+		}
+		getTag("birthmonth").onchange = function() {
+			dayOption();
+		}
+		getTag("birthday").onclick = function() {
+			if (getTag("birthmonth").value == "선택") {
+				alert('월을 먼저 선택해주세요.');
+			}
+		}
+
+		list = addOpt("서울") + addOpt("경기") + addOpt("인천"); //DB에서 광역자치단체명 정보 가져와야 함.
+		getTag("city").innerHTML = choice + list;
+
+		list = addOpt("IT") + addOpt("음식") + addOpt("건강"); //DB에서 분야 목록 가져와야 함.
+		getTag("field").innerHTML = choice + list;
+
+		var clubOption = function() {
+			list = "";
+
+			switch (getTag("field").value) { //DB에서 분야에 따른 동아리 목록 가져와야 함.
+			case "IT":
+				list += addOpt("정처기") + addOpt("자바회");
+				break;
+			case "음식":
+				list += addOpt("미식회") + addOpt("양꼬치칭따오");
+				break;
+			case "건강":
+				list += addOpt("자연주의");
+				break;
+			}
+
+			getTag("club").innerHTML = choice + list;
+		}
+		getTag("field").onclick = function() {
+			clubOption();
+		}
+		getTag("club").onclick = function() {
+			if (getTag("field").value == "선택") {
+				alert('분야를 먼저 선택해주세요.');
+			}
+		}
+
+		list = addOpt("010") + addOpt("011") + addOpt("016") + addOpt("017")
+				+ addOpt("018") + addOpt("019");
+		getTag("telefront").innerHTML = choice + list;
+
+		getTag("teleback").onclick = function() {
+			if (getTag("telefront").value == "선택") {
+				alert('앞자리를 먼저 선택해주세요.')
+			}
+		}
+	</script>
+</body>
+</html>

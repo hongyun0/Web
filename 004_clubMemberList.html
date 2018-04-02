@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>회원목록</title>
+</head>
+<body>
+	<h1>
+		<a><img src='icon/home_icon.png' alt='home' width='35' /></a>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i><ins>회원목록</ins></i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		<a><img src='icon/menu_icon.png' alt='menu' width='35' /></a>
+	</h1>
+	<div id="members">
+		<!-- 구역나누기 -->
+		<ul>
+			<li>아이디 이름 닉네임 성별 생년월일 거주지역</li>
+			<li><a href="hong page">hong 홍윤영 착착 F 1993-04-20 서울 </a></li>
+			<li><a href="taehoon page">taehoon 김태훈 양꼬치맨 M 1990-10-26 경기
+			</a></li>
+		</ul>
+	</div>
+
+	<script type="text/javascript">
+		var icons = document.querySelectorAll("a");
+		icons[0].href = "000_clubHome.html";
+		icons[1].href = "005_clubMenu.html";
+	</script>
+</body>
+</html>

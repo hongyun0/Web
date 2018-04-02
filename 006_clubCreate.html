@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>동아리개설</title>
+<style type="text/css">
+div {
+	font-size: 10pt;
+	color: blue;
+}
+b {
+	font-size: 9pt;
+	color: skyblue;
+}
+</style>
+</head>
+<body>
+	<h1>
+		<a><img src='icon/home_icon.png' alt='home' width='35' /></a>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i><ins>동아리개설</ins></i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		<a><img src='icon/menu_icon.png' alt='menu' width='35' /></a>
+	</h1>
+
+
+	<input name="clubName" id="clubName" value="동아리명">
+	<button name="nameCheck">중복확인</button>
+	<br>
+	<div></div>
+	<b>본인</b>
+	<input type="checkbox" class="Checkbox">
+	<br>
+	<input name="id" id="id" value="대표아이디">
+	<button name="idCheck">확인</button>
+	<div></div>
+	<b>본인</b>
+	<input type="checkbox" class="Checkbox">
+	<input type="radio" name="teleType" checked="checked" value="landline" id="teleTypel">
+	유선
+	<input type="radio" name="teleType" value="mobile" id="teleTypem">
+	휴대폰
+	<br>
+	<select name="telefront" id="telefront">
+		<option>선택</option>
+	</select>
+	<input name="teleback" id="teleback" value="번호 입력">
+	<div></div>
+	<b>본인</b>
+	<input type="checkbox" class="Checkbox">
+	<br>
+	<input name="email" id="email" value="대표 이메일 ">
+	<button name="emailCheck">중복확인</button>
+	<div></div>
+	분야
+	<select name="field" id="field">
+	</select>
+	<input name="fieldInput" id="fieldInput" value="분야입력" hidden="true">
+	<div></div>
+
+	인원제한
+	<input name="limit" id="limit" size="1">명
+	<div></div>
+	<br>
+	<button>개설신청</button>
+	<button>취소</button>
+
+	<script type="text/javascript">
+		var icons = document.querySelectorAll("a");
+		var buttons = document.querySelectorAll("button");
+
+		icons[0].href = "000_clubHome.html";
+		icons[1].href = "005_clubMenu.html";
+
+		// id로 태그가져오는 메서드
+		var getTag = function(id) {
+			return document.querySelector("#" + id);
+		}
+
+		// input text, password의 value수정 메서드 ----> onkeydown
+		var textbox = function(id) {
+			return getTag(id).onkeydown = function() {
+				getTag(id).value = "";
+				getTag(id).onkeydown = "";
+			}
+		}
+
+		textbox("clubName");
+		textbox("id");
+		textbox("teleback");
+		textbox("email");
+		textbox("fieldInput");
+
+		//input 알림문구 div에 표시
+		var divs = document.querySelectorAll("div");
+		getTag("clubName").onkeyup = function() {
+			if (getTag("clubName").value.length >= 2
+					&& getTag("clubName").value.length <= 16) {
+				divs[0].innerHTML = "";
+			} else {
+				divs[0].innerHTML = "동아리 이름은 2~16자";
+			}
+		}
+
+		getTag("id").onkeyup = function() {
+			if (getTag("id").value.length >= 5
+					&& getTag("id").value.length <= 16) {
+				divs[1].innerHTML = "";
+			} else {
+				divs[1].innerHTML = "아이디는 5~16자";
+			}
+		}
+
+		getTag("teleback").onkeyup = function() {
+			if (getTag("teleback").value.length >= 7
+					&& getTag("teleback").value.length <= 8) {
+				divs[2].innerHTML = "";
+			} else {
+				divs[2].innerHTML = "휴대폰번호를 정확하게 입력해주세요.";
+			}
+		}
+
+		getTag("email").onkeyup = function() {
+			if (getTag("email").value.length > 10) { //임시코드. email정규식(문자@문자.문자)에 맞는 값인지 확인하는 코드 필요.
+				divs[3].innerHTML = "";
+			} else {
+				divs[3].innerHTML = "이메일주소를 정확하게 입력해주세요.";
+			}
+		}
+
+		getTag("limit").onkeyup = function() {
+			if (getTag("limit").value > 2 && getTag("limit").value < 1000) {
+				divs[5].innerHTML = "";
+			} else {
+				divs[5].innerHTML = "인원은 3~999명 입니다.";
+			}
+		}
+
+		//버튼 onclick
+		buttons[0].onclick = function() {
+			alert('이미 있는 동아리명입니다.');
+		}
+		buttons[1].onclick = function() {
+			alert('확인되었습니다.');
+		}
+		buttons[2].onclick = function() {
+			alert('이미 등록된 이메일입니다.');
+		}
+		buttons[3].onclick = function() {
+			var check = true;
+			var selects = document.querySelectorAll("select");
+
+			if (!document.querySelectorAll(".Checkbox")[1].checked) {
+				if (selects[0].value == "선택") {
+					check = false;
+				}
+			}
+
+			if (selects[1].value == "선택") {
+				check = false;
+			}
+
+			if (check) {
+				var inputs = document.querySelectorAll("input");
+				for (i in inputs) {
+					if (inputs[i].value == "") {
+						check = false;
+					}
+				}
+			}
+
+			if (check) {
+				for (var i = 0; i < 6; i++) {
+					if (divs[i].innerHTML != "") {
+						check = false;
+					}
+				}
+			}
+			if (check) {
+				if (getTag("clubName").value == "동아리명") {
+					check = false;
+				}
+				if (getTag("id").value == "대표아이디") {
+					check = false;
+				}
+				if (getTag("teleback").value == "번호 입력") {
+					check = false;
+				}
+				if (getTag("email").value == "대표 이메일") {
+					check = false;
+				}
+				if (getTag("field").value == "직접입력") {
+					if (getTag("fieldInput").value == "분야입력") {
+						check = false;
+					}
+				}
+			}
+			if (check) {
+				alert(getTag("clubName").value + "동아리가 개설되었습니다.")
+			} else {
+				alert('입력하신 정보를 다시 확인해주세요.');
+			}
+		}
+		buttons[4].onclick = function() {
+			alert('정말 취소하시겠습니까?');
+		}
+
+		//본인선택버튼
+		document.querySelectorAll(".Checkbox")[0].onclick = function() {
+			if (this.checked) {
+				getTag("id").disabled = "disabled";
+				getTag("id").value = "myId";
+			} else {
+				getTag("id").disabled = "";
+				getTag("id").value = "대표 아이디";
+			}
+		}
+		document.querySelectorAll(".Checkbox")[1].onclick = function() {
+			if (this.checked) {
+				getTag("teleTypel").disabled = "disabled";
+				getTag("teleTypem").disabled = "disabled";
+				getTag("teleback").disabled = "disabled";
+				getTag("teleback").value = "myNumber";
+				document.querySelector("select").disabled = "disabled";
+			} else {
+				getTag("teleTypel").disabled = "";
+				getTag("teleTypem").disabled = "";
+				getTag("teleback").disabled = "";
+				getTag("teleback").value = "번호 입력";
+				document.querySelector("select").disabled = "";
+			}
+		}
+		document.querySelectorAll(".Checkbox")[2].onclick = function() {
+			if (this.checked) {
+				getTag("email").disabled = "disabled";
+				getTag("email").value = "myEmail";
+			} else {
+				getTag("email").disabled = "";
+				getTag("email").value = "대표 이메일";
+			}
+		}
+
+		//select
+		var choice = "<option>선택</option>"
+		var list = "";
+		var addOpt = function(option) {
+			return "<option value="+ option + ">" + option + "</option>";
+		}
+		list = addOpt("02") + addOpt("031") + addOpt("032") + addOpt("041")
+				+ addOpt("042") + addOpt("043");
+		getTag("telefront").innerHTML = choice + list;
+
+		getTag("teleTypel").onclick = function() {
+			if (getTag("teleTypel").checked == true) {
+				list = addOpt("02") + addOpt("031") + addOpt("032")
+						+ addOpt("041") + addOpt("042") + addOpt("043");
+			}
+			getTag("telefront").innerHTML = choice + list;
+		}
+		getTag("teleTypem").onclick = function() {
+			if (getTag("teleTypem").checked == true) {
+				list = addOpt("010") + addOpt("011") + addOpt("016")
+						+ addOpt("017") + addOpt("018") + addOpt("019");
+			}
+			getTag("telefront").innerHTML = choice + list;
+		}
+
+		getTag("teleback").onclick = function() {
+			if (getTag("telefront").value == "선택") {
+				alert('앞자리를 먼저 선택해주세요.')
+			}
+		}
+
+		list = addOpt("IT") + addOpt("음식") + addOpt("음악") + addOpt("건강")
+				+ addOpt("직접입력");
+		getTag("field").innerHTML = choice + list;
+
+		getTag("field").onclick = function() {
+			if (getTag("field").value == "직접입력") {
+				getTag("fieldInput").hidden = false;
+
+				getTag("fieldInput").onkeyup = function() {
+					if (getTag("fieldInput").value.length < 11) {
+						divs[4].innerHTML = "";
+					} else {
+						divs[4].innerHTML = "분야명은 10자 이하";
+					}
+				}
+			}
+		}
+	</script>
+</body>
+
+</html>

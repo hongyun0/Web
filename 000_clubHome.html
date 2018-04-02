@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Home</title>
+<style type="text/css">
+	li {
+		list-style: none;
+	}
+	a {
+		text-decoration: none;
+		color: black;
+	}
+</style>
+</head>
+<body>
+	<h1>
+		<a><img src='icon/home_icon.png' alt='home' width='35' /></a>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i><ins>Home</ins></i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		<a><img src='icon/menu_icon.png' alt='menu' width='35' /></a>
+	</h1>
+	<h3>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;동아리 웹페이지 입니다.</h3>
+	&nbsp;&nbsp;&nbsp;&nbsp;
+	<img alt="회원" src="icon/person_icon.png" width="80">
+	<img alt="연결" src="icon/link_icon.png" width="110">
+	<img alt="즐거운 동아리" src="icon/people_icon.png" width="100">
+		
+	<script type="text/javascript">
+		var icons = document.querySelectorAll("a");
+		console.log(icons);
+		icons[0].href="000_clubHome.html";
+		icons[1].href="005_clubMenu.html";
+	</script>
+</body>
+</html>
