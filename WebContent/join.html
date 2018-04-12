@@ -12,115 +12,130 @@ div {
 </head>
 <body>
 	<h1>
-		<a><img src='icon/home_icon.png' alt='home' width='35' /></a>
+		<a href="home.html"><img src='icon/home_icon.png' alt='home' width='35' /></a>
 		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i><ins>회원가입</ins></i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-		<a><img src='icon/menu_icon.png' alt='menu' width='35' /></a>
+		<a href="menu.html"><img src='icon/menu_icon.png' alt='menu' width='35' /></a>
 	</h1>
 
-	<input name="id" id="id" value="아이디">
+	<form method="get" action="joinAction">
+	<input name="id" id="id" placeholder="아이디" required="required">
 	<button name="idCheck">중복확인</button>
 	<br>
 	<div></div>
-	<input type="text" name="pw" id="pw1" value="비밀번호">
+	<input type="password" name="pw" id="pw1" placeholder="비밀번호" required="required">
 	<br>
 	<div></div>
-	<input type="text" id="pw2" value="비밀번호 확인">
+	<input type="password" id="pw2" placeholder="비밀번호 확인" required="required">
 	<br>
 	<div></div>
 	<!-- 비밀번호 확인은 서버에 안넘김 -->
-	<input name="name" value="이름" id="name">
+	<input name="name" placeholder="이름" id="name" required="required">
 	<br>
 	<div></div>
-	<input name="nickname" value="닉네임" id="nickname">
+	<input name="nickname" placeholder="닉네임" id="nickname" required="required">
 	<button name="nickCheck">중복확인</button>
 	<br>
 	<div></div>
 	<input type="radio" name="gender" checked="checked" value="M" id="genderM">남자
 	<input type="radio" name="gender" value="F" id="genderF">여자
 	<br> 생년월일
-	<select name="birthyear" id="birthyear">
+	<select name="birthyear" id="birthyear" required="required">
 	</select>
-	<select name="birthmonth" id="birthmonth">
+	<select name="birthmonth" id="birthmonth" required="required">
 	</select>
-	<select name="birthday" id="birthday">
-		<option>선택</option>
+	<select name="birthday" id="birthday" required="required">
+		<option value="">선택</option>
 	</select>
 	<br> 거주지역
-	<select name="city" id="city">
+	<select name="city" id="city" required="required">
 	</select>
 	<br>
-	<select name="telefront" id="telefront">
+	<select name="telefront" id="telefront" required="required">
 	</select>
-	<input name="teleback" id="teleback" value="번호입력">
-	<button name="teleconfirm">인증</button>
+	<input name="teleback" id="teleback" placeholder="번호입력" required="required">
 	<br>
 	<div></div>
-	<input name="email" id="email" value="이메일 주소">
-	<button name="emailCheck">중복확인</button>
+	<input name="email" id="email" placeholder="이메일 주소" required="required">
 	<br>
 	<div></div>
 	소속동아리
 	<select name="field" id="field">
 	</select>
 	<select name="club" id="club">
-		<option>선택</option>
+		<option value="">선택</option>
 	</select>
 	<br>
 	<br>
-	<button>회원가입</button>
+	<input type="submit" value="회원가입">
 	<button>취소</button>
-
+	</form>
+	
 	<script type="text/javascript">
-		var icons = document.querySelectorAll("a");
-
-		icons[0].href = "000_clubHome.html";
-		icons[1].href = "005_clubMenu.html";
-
 		// id로 태그가져오는 메서드
 		var getTag = function(id) {
 			return document.querySelector("#" + id);
 		}
 
-		// input text, password의 value수정 메서드 ----> onkeydown
-		var textbox = function(id) {
-			return getTag(id).onkeydown = function() {
-				getTag(id).value = "";
-				getTag(id).onkeydown = "";
-			}
-		}
-
-		var pwbox = function(pw) {
-			getTag(pw).onkeydown = function() {
-				getTag(pw).type = "password";
-				getTag(pw).value = "";
-				getTag(pw).onkeydown = "";
-			}
-		}
-
-		textbox("id");
-		textbox("name");
-		textbox("nickname");
-		textbox("teleback");
-		textbox("email");
-		pwbox("pw1");
-		pwbox("pw2");
-
+		//중복확인 여부
+		var idCheck = false;
+		var nickCheck = false;
+		
 		//버튼 onclick
 		var divs = document.querySelectorAll("div");
 		var buttons = document.querySelectorAll("button");
 		buttons[0].onclick = function() {
-			alert('이미 있는 아이디입니다.');
+			if(getTag("id").value != "") {
+				var xhrId = new XMLHttpRequest();
+				var isMemberIdCallBackMethod = function(){
+					if(xhrId.readyState == 4) {
+						if(xhrId.status >= 200 && xhrId.status < 400) {
+							var result = JSON.parse(xhrId.responseText);
+							if(result["result"] == "false") {
+								alert('사용할 수 있는 아이디입니다.');
+								idCheck = true;
+							} else {
+								alert('이미 있는 아이디입니다.');
+							}
+						} else {
+							alert('error' + xhrId.status);	//error
+						}
+					}
+				}
+				xhrId.onreadystatechange = isMemberIdCallBackMethod;
+				var url = "isMemberIdAction?id=" + getTag("id").value;
+				xhrId.open("get", url);
+				xhrId.send();	
+			} else {
+				alert('아이디를 입력해주세요.');
+			}
 		}
 		buttons[1].onclick = function() {
-			alert('이미 있는 닉네임입니다.');
+			if(getTag("nickname").value != "") {
+				var xhrNick = new XMLHttpRequest();
+				var isNicknameCallBackMethod = function(){
+					if(xhrNick.readyState == 4) {
+						if(xhrNick.status >= 200 && xhrNick.status < 400) {
+							var result = JSON.parse(xhrNick.responseText);
+							if(result["result"] == "false") {
+								alert('사용할 수 있는 닉네임입니다.');
+								nickCheck = true;
+							} else {
+								alert('이미 있는 닉네임입니다.');
+							}
+						} else {
+							alert('error' + xhrNick.status);	//error
+						}
+					}
+				}
+				xhrNick.onreadystatechange = isNicknameCallBackMethod;
+				var url = "isNicknameAction?nickname=" + getTag("nickname").value;
+				xhrNick.open("get", url);
+				xhrNick.send();	
+			} else {
+				alert('닉네임을 입력해주세요.');
+			}
 		}
-		buttons[2].onclick = function() {
-			alert('인증되었습니다.');
-		}
-		buttons[3].onclick = function() {
-			alert('이미 있는 이메일입니다.');
-		}
-		buttons[4].onclick = function() {
+/*회원가입	buttons[2].onclick = function() {
 			var check = true;
 			var selects = document.querySelectorAll("select");
 			for (var i = 0; i < 7; i++) {
@@ -144,36 +159,15 @@ div {
 					}
 				}
 			}
-			if (check) {
-				if (getTag("id").value == "아이디") {
-					check = false;
-				}
-				if (getTag("pw1").value == "비밀번호") {
-					check = false;
-				}
-				if (getTag("pw2").value == "비밀번호 확인") {
-					check = false;
-				}
-				if (getTag("name").value == "이름") {
-					check = false;
-				}
-				if (getTag("nickname").value == "닉네임") {
-					check = false;
-				}
-				if (getTag("teleback").value == "번호입력") {
-					check = false;
-				}
-				if (getTag("email").value == "이메일 주소") {
-					check = false;
-				}
-			}
+			
 			if (check) {
 				alert(getTag("id").value + "님 회원이 되신 걸 환영합니다.")
 			} else {
 				alert('입력하신 정보를 다시 확인해주세요.');
 			}
 		}
-		buttons[5].onclick = function() {
+		*/
+		buttons[2].onclick = function() {
 			alert('정말 취소하시겠습니까?');
 		}
 
@@ -185,6 +179,7 @@ div {
 			} else {
 				divs[0].innerHTML = "아이디는 5~16자";
 			}
+			idCheck = false;
 		}
 		getTag("pw1").onkeyup = function() {
 			if (getTag("pw1").value.length >= 8
@@ -216,6 +211,7 @@ div {
 			} else {
 				divs[4].innerHTML = "닉네임은 2~20자";
 			}
+			nickCheck = false;
 		}
 		getTag("teleback").onkeyup = function() {
 			if (getTag("teleback").value.length >= 7
@@ -234,7 +230,7 @@ div {
 		}
 
 		//select에 option 집어넣는 메서드 + '먼저 선택하세요'
-		var choice = "<option>선택</option>"
+		var choice = "<option value=\"\">선택</option>"
 		var list = "";
 		var addOpt = function(option) {
 			return "<option value="+ option + ">" + option + "</option>";
@@ -246,6 +242,9 @@ div {
 
 		list = "";
 		for (var i = 1; i <= 12; i++) {
+			if(i < 10) {
+				i = "0"+ i;
+			}
 			list += addOpt(i);
 		}
 		getTag("birthmonth").innerHTML = choice + list;
@@ -255,18 +254,21 @@ div {
 			var max = 31;
 
 			switch (getTag("birthmonth").value) {
-			case '2':
+			case '02':
 				max = 28;
 				break;
-			case '4':
-			case '6':
-			case '9':
+			case '04':
+			case '06':
+			case '09':
 			case '11':
 				max = 30;
 				break;
 			}
 
 			for (var i = 1; i <= max; i++) {
+				if(i < 10) {
+					i = "0"+ i;
+				}
 				list += addOpt(i);
 			}
 			getTag("birthday").innerHTML = choice + list;
@@ -275,39 +277,69 @@ div {
 			dayOption();
 		}
 		getTag("birthday").onclick = function() {
-			if (getTag("birthmonth").value == "선택") {
+			if (getTag("birthmonth").value == "") {
 				alert('월을 먼저 선택해주세요.');
 			}
 		}
 
-		list = addOpt("서울") + addOpt("경기") + addOpt("인천"); //DB에서 광역자치단체명 정보 가져와야 함.
-		getTag("city").innerHTML = choice + list;
-
-		list = addOpt("IT") + addOpt("음식") + addOpt("건강"); //DB에서 분야 목록 가져와야 함.
-		getTag("field").innerHTML = choice + list;
-
-		var clubOption = function() {
-			list = "";
-
-			switch (getTag("field").value) { //DB에서 분야에 따른 동아리 목록 가져와야 함.
-			case "IT":
-				list += addOpt("정처기") + addOpt("자바회");
-				break;
-			case "음식":
-				list += addOpt("미식회") + addOpt("양꼬치칭따오");
-				break;
-			case "건강":
-				list += addOpt("자연주의");
-				break;
+		
+		//ajax for cities
+		var xhrCity = new XMLHttpRequest();
+		var citiesCallBackMethod = function(){
+			if(xhrCity.readyState == 4) {
+				if(xhrCity.status >= 200 && xhrCity.status < 400) {
+					getTag("city").innerHTML = choice + xhrCity.responseText;
+				} else {
+					alert('error' + xhrCity.status);	//error
+				}
 			}
+		}
+		xhrCity.onreadystatechange = citiesCallBackMethod;
+		var url = "getCitiesAction"
+		xhrCity.open("get", url);
+		xhrCity.send();	
+		
+		//ajax for categories
+		var xhrCate = new XMLHttpRequest();
+		var categoriesCallBackMethod = function(){
+			if(xhrCate.readyState == 4) {
+				if(xhrCate.status >= 200 && xhrCate.status < 400) {
+					getTag("field").innerHTML = choice + "<option value=\"none\">해당없음</option>" + xhrCate.responseText;
+				} else {
+					alert('error' + xhrCate.status);	//error
+				}
+			}
+		}
+		xhrCate.onreadystatechange = categoriesCallBackMethod;
+		var url = "getCategoriesAction"
+		xhrCate.open("get", url);
+		xhrCate.send();	
 
-			getTag("club").innerHTML = choice + list;
+
+		getTag("field").onchange = function() {
+			if(getTag("field").value != "") {
+				var xhrField = new XMLHttpRequest();
+				var categoriesCallBackMethod = function(){
+					if(xhrField.readyState == 4) {
+						if(xhrField.status >= 200 && xhrField.status < 400) {
+							getTag("club").innerHTML = choice + xhrField.responseText;
+						} else {
+							alert('error' + xhrField.status);	//error
+						}
+					}
+				}
+				xhrField.onreadystatechange = categoriesCallBackMethod;
+				var url = "getCateClubsAction?category=" + getTag("field").value;
+				xhrField.open("get", url);
+				xhrField.send();	
+			} else {
+				getTag("club").innerHTML = choice;
+			}
+			
 		}
-		getTag("field").onclick = function() {
-			clubOption();
-		}
+		
 		getTag("club").onclick = function() {
-			if (getTag("field").value == "선택") {
+			if (getTag("field").value == "") {
 				alert('분야를 먼저 선택해주세요.');
 			}
 		}
@@ -317,7 +349,7 @@ div {
 		getTag("telefront").innerHTML = choice + list;
 
 		getTag("teleback").onclick = function() {
-			if (getTag("telefront").value == "선택") {
+			if (getTag("telefront").value == "") {
 				alert('앞자리를 먼저 선택해주세요.')
 			}
 		}
