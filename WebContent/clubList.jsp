@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ include file="loginSession.jsp" %>
+<%@ include file="header.jsp" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -11,13 +12,11 @@
 		list-style: none;
 	}
 </style>
+<script>
+	document.querySelector("#pageTitle").innerHTML = "동아리목록";
+</script>
 </head>
 <body>
-	<h1>
-		<a href="home.html"><img src='icon/home_icon.png' alt='home' width='35' /></a>
-		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i><ins>동아리목록</ins></i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-		<a href="menu.html"><img src='icon/menu_icon.png' alt='menu' width='35' /></a>
-	</h1>
 	<div></div>
 	
 <script type="text/javascript">

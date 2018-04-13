@@ -16,7 +16,6 @@ public class IsClubNameActionServlet extends HttpServlet {
 	@Override
 	protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String clubName = request.getParameter("clubName");
-		System.out.println(clubName);
 		boolean result = false;
 		try {
 			result = new ClubDAO().isClubName(clubName);

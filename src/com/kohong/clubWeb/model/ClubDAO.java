@@ -113,8 +113,11 @@ public class ClubDAO {
 			if(pstmt.executeUpdate() == 1) {
 				result = true;
 			}
-			pstmt.close();			
-		} catch (SQLException e) {
+			pstmt.close();	
+			MemberDAO dao = new MemberDAO();
+			dao.clubJoin(createrId, clubName);
+			dao.clubJoin(captainId, clubName);
+		} catch (ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
 		}
 			

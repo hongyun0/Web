@@ -201,6 +201,68 @@ public class MemberDAO {
 	}
 
 	
+	public List<String> getMyJoinedClubs (String id) {
+		List<String> clubs = new ArrayList<>();
+		String sql = "select club_name from joined_clubs where member_id=?";
+		
+		try {
+			PreparedStatement ps = conn.prepareStatement(sql);
+			ps.setString(1, id);
+			ResultSet rs = ps.executeQuery();
+			while(rs.next()){
+				clubs.add(rs.getString(1));
+				}	
+			rs.close();
+			ps.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return clubs;
+	}
+
+	public Map<String, String> getClubInfo(String clubName){
+		Map<String, String> clubInfo = new HashMap<>();
+		String sql = "select category, email, phone_num ,captain_id from clubs where club_name=?";
+		try {
+			PreparedStatement ps = conn.prepareStatement(sql);
+			ps.setString(1, clubName);
+			ResultSet rs = ps.executeQuery();
+			while(rs.next()){
+				clubInfo.put("category", rs.getString(1));
+				clubInfo.put("email", rs.getString(2));
+				clubInfo.put("phoneNumber", rs.getString(3));
+				clubInfo.put("captainId", rs.getString(4));
+				clubInfo.put("count", String.valueOf(getMemberCount(clubName)));
+				clubInfo.put("clubName", clubName);
+			}
+			rs.close();
+			ps.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return clubInfo;
+		
+	}
+	
+	public int getMemberCount(String clubName){
+		int memberCount = 0;
+		String sql="select member_id from joined_clubs where club_name=?";
+		try {
+			PreparedStatement ps = conn.prepareStatement(sql);
+			ps.setString(1, clubName);
+			ResultSet rs = ps.executeQuery();
+			while(rs.next()){
+				memberCount ++ ;
+			}
+			rs.close();
+			ps.close();
+		} catch (SQLException e) {
+		
+			e.printStackTrace();
+		}
+		return memberCount;
+		
+	}
 	
 	
 }

@@ -1,3 +1,6 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ include file="header.jsp" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -9,14 +12,11 @@ div {
 	color: blue;
 }
 </style>
+<script>
+	document.querySelector("#pageTitle").innerHTML = "회원가입";
+</script>
 </head>
 <body>
-	<h1>
-		<a href="home.html"><img src='icon/home_icon.png' alt='home' width='35' /></a>
-		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i><ins>회원가입</ins></i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-		<a href="menu.html"><img src='icon/menu_icon.png' alt='menu' width='35' /></a>
-	</h1>
-
 	<form method="get" action="joinAction">
 	<input name="id" id="id" placeholder="아이디" required="required">
 	<button name="idCheck">중복확인</button>
@@ -66,7 +66,7 @@ div {
 	</select>
 	<br>
 	<br>
-	<input type="submit" value="회원가입">
+	<input type="button" value="회원가입" id="join">
 	<button>취소</button>
 	</form>
 	
@@ -135,7 +135,8 @@ div {
 				alert('닉네임을 입력해주세요.');
 			}
 		}
-/*회원가입	buttons[2].onclick = function() {
+		
+		getTag("join").onclick = function(){
 			var check = true;
 			var selects = document.querySelectorAll("select");
 			for (var i = 0; i < 7; i++) {
@@ -159,14 +160,19 @@ div {
 					}
 				}
 			}
-			
 			if (check) {
-				alert(getTag("id").value + "님 회원이 되신 걸 환영합니다.")
+				if (!idCheck && nickCheck) {
+					check = false;
+				}
+			}
+			if (check) {
+				getTag("join").type = "submit";
+				getTag("join").onclick();
 			} else {
 				alert('입력하신 정보를 다시 확인해주세요.');
 			}
 		}
-		*/
+
 		buttons[2].onclick = function() {
 			alert('정말 취소하시겠습니까?');
 		}

@@ -35,7 +35,6 @@ public class LoginActionServlet extends HttpServlet {
 		if(!result.isEmpty()) {
 			page = "loginOK.jsp";
 			request.setAttribute("nickname", result.get("nickname"));
-			
 			HttpSession session = request.getSession(true);
 			session.setAttribute("id", id);
 		}

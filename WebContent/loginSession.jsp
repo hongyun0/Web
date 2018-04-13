@@ -5,7 +5,7 @@
 		%>
 			<script>
 				alert('회원전용입니다. 로그인해주세요!');
-				location.href='login.html';
+				location.href='login.jsp';
 			</script>
 		<% 	return; //
 	}//if

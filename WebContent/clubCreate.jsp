@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ include file="loginSession.jsp" %>
+<%@ include file="header.jsp" %>
 <%String id = (String)session.getAttribute("id");%>
 <!DOCTYPE html>
 <html>
@@ -17,24 +18,22 @@ b {
 	color: skyblue;
 }
 </style>
+<script src="jquery-3.3.1.js"></script>
+<script type="text/javascript">
+	document.querySelector("#pageTitle").innerHTML = "동아리개설";
+</script>
 </head>
 <body>
-	<h1>
-		<a href="home.html"><img src='icon/home_icon.png' alt='home' width='35' /></a>
-		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i><ins>동아리개설</ins></i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-		<a href="menu.html"><img src='icon/menu_icon.png' alt='menu' width='35' /></a>
-	</h1>
-
-	<form method="get" action="clubCreateAction">
-	<input name="clubName" id="clubName" placeholder="동아리명" required="required">
-	<button name="nameCheck">중복확인</button>
+	<nav id="all">
+	<input name="clubName" id="clubName" placeholder="동아리명">
+	<button id="nameCheckBtn" disabled="disabled">중복확인</button>
 	<br>
 	<div></div>
 	<b>본인</b>
 	<input type="checkbox" class="Checkbox">
 	<br>
-	<input name="id" id="id" placeholder="대표아이디" required="required">
-	<button name="idCheck">확인</button>
+	<input name="id" id="id" placeholder="대표아이디">
+	<button id="idCheckBtn" disabled="disabled">확인</button>
 	<div></div>
 	<b>본인</b>
 	<input type="checkbox" class="Checkbox">
@@ -46,15 +45,15 @@ b {
 	<select name="telefront" id="telefront" required="required">
 		<option value="">선택</option>
 	</select>
-	<input name="teleback" id="teleback" placeholder="번호 입력" required="required">
+	<input name="teleback" id="teleback" placeholder="번호 입력">
 	<div></div>
 	<b>본인</b>
 	<input type="checkbox" class="Checkbox">
 	<br>
-	<input name="email" id="email" placeholder="대표 이메일 " required="required">
+	<input name="email" id="email" placeholder="대표 이메일 ">
 	<div></div>
 	분야
-	<select name="field" id="field" required="required">
+	<select name="field" id="field">
 	</select>
 	<input name="fieldInput" id="fieldInput" placeholder="분야입력" hidden="true">
 	<div></div>
@@ -62,12 +61,14 @@ b {
 	<input name="limit" id="limit" size="1">명
 	<div></div>
 	<br>
-	<input type="submit" value="개설신청">
-	<button>취소</button>
-	</form>
+	<input type="button" value="개설신청" id="create">
+	<button id="resetBtn">취소</button>
+	</nav>
 	<script type="text/javascript">
-		var buttons = document.querySelectorAll("button");
-
+		//중복확인 여부
+		var clubNameCheck = false;
+		var idCheck = false;
+		
 		// id로 태그가져오는 메서드
 		var getTag = function(id) {
 			return document.querySelector("#" + id);
@@ -79,18 +80,24 @@ b {
 			if (getTag("clubName").value.length >= 2
 					&& getTag("clubName").value.length <= 16) {
 				divs[0].innerHTML = "";
+				getTag("nameCheckBtn").disabled = "";
 			} else {
 				divs[0].innerHTML = "동아리 이름은 2~16자";
+				getTag("nameCheckBtn").disabled = true;
 			}
+			 clubNameCheck = false;
 		}
 
 		getTag("id").onkeyup = function() {
 			if (getTag("id").value.length >= 5
 					&& getTag("id").value.length <= 16) {
 				divs[1].innerHTML = "";
+				getTag("idCheckBtn").disabled = "";
 			} else {
 				divs[1].innerHTML = "아이디는 5~16자";
+				getTag("idCheckBtn").disabled = true;
 			}
+			 idCheck = false;
 		}
 
 		getTag("teleback").onkeyup = function() {
@@ -119,15 +126,17 @@ b {
 		}
 
 		//버튼 onclick
-		buttons[0].onclick = function() {
+		getTag("nameCheckBtn").onclick = function() {
 			if(getTag("clubName").value != "") {
 				var xhrclub = new XMLHttpRequest();
-				var isNicknameCallBackMethod = function(){
+				var isClubnameCallBackMethod = function(){
 					if(xhrclub.readyState == 4) {
 						if(xhrclub.status >= 200 && xhrclub.status < 400) {
 							var result = JSON.parse(xhrclub.responseText);
 							if(result["result"] == "false") {
 								alert('사용할 수 있는 동아리명입니다.');
+								clubNameCheck = true;
+								divs[0].innerHTML = "";
 							} else {
 								alert('이미 있는 동아리명입니다.');
 							}
@@ -136,7 +145,7 @@ b {
 						}
 					}
 				}
-				xhrclub.onreadystatechange = isNicknameCallBackMethod;
+				xhrclub.onreadystatechange = isClubnameCallBackMethod;
 				var url = "isClubNameAction?clubName=" + getTag("clubName").value;
 				xhrclub.open("get", url);
 				xhrclub.send();	
@@ -144,7 +153,7 @@ b {
 				alert('동아리명을 입력해주세요.');
 			}
 		}
-		buttons[1].onclick = function() {
+		getTag("idCheckBtn").onclick = function() {
 			if(getTag("id").value != "") {
 				var xhrId = new XMLHttpRequest();
 				var isMemberIdCallBackMethod = function(){
@@ -153,6 +162,8 @@ b {
 							var result = JSON.parse(xhrId.responseText);
 							if(result["result"] == "true") {
 								alert('아이디가 확인되었습니다.');
+								idCheck = true;
+								divs[1].innerHTML = "";
 							} else {
 								alert('입력한 아이디를 다시 확인해주세요.');
 							}
@@ -169,7 +180,7 @@ b {
 				alert('대표아이디를 입력해주세요.');
 			}
 		}
-		buttons[2].onclick = function() {
+		getTag("resetBtn").onclick = function() {
 			alert('정말 취소하시겠습니까?');
 		}
 
@@ -178,6 +189,8 @@ b {
 			if (this.checked) {
 				 getTag("id").value = "<%=id%>";
 		         getTag("id").disabled = "disabled";
+		         idCheck = true;
+		         divs[1].innerHTML = "";
 			} else {
 				getTag("id").disabled = "";
 				getTag("id").value = "";
@@ -186,13 +199,11 @@ b {
 		document.querySelectorAll(".Checkbox")[1].onclick = function() {
 			if (this.checked) {
 				var xhr = new XMLHttpRequest();
-				var myPhone = "";
 				var getMyPhoneCallBackMethod = function(){
 					if(xhr.readyState == 4) {
 						if(xhr.status >= 200 && xhr.status < 400) {
 							var result = JSON.parse(xhr.responseText);
-							myPhone = result["result"];
-							getTag("teleback").value = myPhone;
+							getTag("teleback").value = result["result"];
 						} else {
 							alert('error' + xhr.status);	//error
 						}
@@ -203,17 +214,20 @@ b {
 				xhr.open("get", url);
 				xhr.send();	
 				getTag("teleTypem").checked = true;
-				getTag("telefront").value = "";
+				getTag("telefront").innerHTML = "<option>---</option>";
+				getTag("telefront").value = "---";
 				getTag("teleTypel").disabled = "disabled";
 				getTag("teleTypem").disabled = "disabled";
 				getTag("teleback").disabled = "disabled";
-				document.querySelector("select").disabled = "disabled";
+				getTag("telefront").disabled = "disabled";
+				divs[2].innerHTML = "";
 			} else {
 				getTag("teleTypel").disabled = "";
 				getTag("teleTypem").disabled = "";
 				getTag("teleback").disabled = "";
+				getTag("telefront").value = "선택";
 				getTag("teleback").value = "";
-				document.querySelector("select").disabled = "";
+				getTag("telefront").disabled = "";
 			}
 		}
 		
@@ -237,13 +251,14 @@ b {
 				xhr.open("get", url);
 				xhr.send();	
 				getTag("email").disabled = "disabled";
+				divs[3].innerHTML = "";
 
 			} else {
 				getTag("email").disabled = "";
 				getTag("email").value = "";
 			}
 		}
-
+		
 		//select
 		var choice = "<option>선택</option>"
 		var list = "";
@@ -282,7 +297,6 @@ b {
 		getTag("field").onchange = function() {
 			if (getTag("field").value == "직접입력") {
 				getTag("fieldInput").hidden = false;
-				getTag("fieldInput").required = true;
 
 				getTag("fieldInput").onkeyup = function() {
 					if (getTag("fieldInput").value.length < 11) {
@@ -294,7 +308,66 @@ b {
 			} else {
 				getTag("fieldInput").value = "";
 				getTag("fieldInput").hidden = true;
-				getTag("fieldInput").required = false;
+			}
+		}
+		
+		getTag("create").onclick = function(){
+			var check = true;
+			
+			var selects = document.querySelectorAll("select");
+			for (var i = 0; i < 2; i++) {
+				if (selects[i].value == "선택") {
+					check = false;
+					console.log('select')
+				}
+			}
+			if (check) {
+				var inputs = document.querySelectorAll("input");
+				for (var i = 0; i < 11; i++) {
+					if (inputs[i].hidden != true && inputs[i].id != "limit" && inputs[i].value == "") {
+						console.log(inputs[i])
+						check = false;
+					}
+				}
+			}
+			if (check) {
+				for (var i = 0; i < 6; i++) {
+					if (divs[i].innerHTML != "") {
+						check = false;
+						console.log('divs')
+					}
+				}
+			}
+			if (check) {
+				if (!clubNameCheck) {
+					check = false;
+					divs[0].innerHTML = "중복확인 필수";
+				}
+				if(!document.querySelector(".checkbox").checked && !idCheck) {
+					check = false;
+					divs[1].innerHTML = "아이디 확인 필수";
+				}
+			}
+
+			if (check) {
+				$.ajax({
+					url : "clubCreateAction",
+					data : {
+						clubName : $("#clubName").val(),
+						id : $("#id").val(),
+						telefront : $("#telefront").val(),
+						teleback : $("#teleback").val(),
+						email : $("#email").val(),
+						field : $("#field").val(),
+						fieldInput : $("#fieldInput").val(),
+						limit : $("#limit").val()
+						},
+					success : function(results) {
+						$("#all").html(results);
+					} 
+				});
+			} else {
+				alert('입력하신 정보를 다시 확인해주세요.');
 			}
 		}
 	</script>

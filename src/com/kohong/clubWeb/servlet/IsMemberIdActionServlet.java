@@ -16,7 +16,6 @@ public class IsMemberIdActionServlet extends HttpServlet {
 	@Override
 	protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String id = request.getParameter("id");
-		System.out.println(id);
 		boolean result = false;
 		try {
 			result = new MemberDAO().isMemberId(id);
