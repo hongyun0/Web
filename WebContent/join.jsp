@@ -9,7 +9,7 @@
 <style>
 div {
 	font-size: 10pt;
-	color: blue;
+	color: red;
 }
 </style>
 <script>
@@ -19,7 +19,6 @@ div {
 <body>
 	<form method="get" action="joinAction">
 	<input name="id" id="id" placeholder="아이디" required="required">
-	<button name="idCheck">중복확인</button>
 	<br>
 	<div></div>
 	<input type="password" name="pw" id="pw1" placeholder="비밀번호" required="required">
@@ -28,12 +27,10 @@ div {
 	<input type="password" id="pw2" placeholder="비밀번호 확인" required="required">
 	<br>
 	<div></div>
-	<!-- 비밀번호 확인은 서버에 안넘김 -->
 	<input name="name" placeholder="이름" id="name" required="required">
 	<br>
 	<div></div>
 	<input name="nickname" placeholder="닉네임" id="nickname" required="required">
-	<button name="nickCheck">중복확인</button>
 	<br>
 	<div></div>
 	<input type="radio" name="gender" checked="checked" value="M" id="genderM">남자
@@ -66,7 +63,7 @@ div {
 	</select>
 	<br>
 	<br>
-	<input type="button" value="회원가입" id="join">
+	<input type="button" value="회원가입" id="join" >
 	<button>취소</button>
 	</form>
 	
@@ -82,60 +79,7 @@ div {
 		
 		//버튼 onclick
 		var divs = document.querySelectorAll("div");
-		var buttons = document.querySelectorAll("button");
-		buttons[0].onclick = function() {
-			if(getTag("id").value != "") {
-				var xhrId = new XMLHttpRequest();
-				var isMemberIdCallBackMethod = function(){
-					if(xhrId.readyState == 4) {
-						if(xhrId.status >= 200 && xhrId.status < 400) {
-							var result = JSON.parse(xhrId.responseText);
-							if(result["result"] == "false") {
-								alert('사용할 수 있는 아이디입니다.');
-								idCheck = true;
-							} else {
-								alert('이미 있는 아이디입니다.');
-							}
-						} else {
-							alert('error' + xhrId.status);	//error
-						}
-					}
-				}
-				xhrId.onreadystatechange = isMemberIdCallBackMethod;
-				var url = "isMemberIdAction?id=" + getTag("id").value;
-				xhrId.open("get", url);
-				xhrId.send();	
-			} else {
-				alert('아이디를 입력해주세요.');
-			}
-		}
-		buttons[1].onclick = function() {
-			if(getTag("nickname").value != "") {
-				var xhrNick = new XMLHttpRequest();
-				var isNicknameCallBackMethod = function(){
-					if(xhrNick.readyState == 4) {
-						if(xhrNick.status >= 200 && xhrNick.status < 400) {
-							var result = JSON.parse(xhrNick.responseText);
-							if(result["result"] == "false") {
-								alert('사용할 수 있는 닉네임입니다.');
-								nickCheck = true;
-							} else {
-								alert('이미 있는 닉네임입니다.');
-							}
-						} else {
-							alert('error' + xhrNick.status);	//error
-						}
-					}
-				}
-				xhrNick.onreadystatechange = isNicknameCallBackMethod;
-				var url = "isNicknameAction?nickname=" + getTag("nickname").value;
-				xhrNick.open("get", url);
-				xhrNick.send();	
-			} else {
-				alert('닉네임을 입력해주세요.');
-			}
-		}
-		
+				
 		getTag("join").onclick = function(){
 			var check = true;
 			var selects = document.querySelectorAll("select");
@@ -173,19 +117,46 @@ div {
 			}
 		}
 
-		buttons[2].onclick = function() {
+		document.querySelector("button").onclick = function() {
 			alert('정말 취소하시겠습니까?');
 		}
 
 		//input 알림문구 div에 표시
 		getTag("id").onkeyup = function() {
 			if (getTag("id").value.length >= 5
-					&& getTag("id").value.length <= 16) {
-				divs[0].innerHTML = "";
+				&& getTag("id").value.length <= 16) {
+				var xhrId = new XMLHttpRequest();
+				var isMemberIdCallBackMethod = function(){
+					if(xhrId.readyState == 4) {
+						if(xhrId.status >= 200 && xhrId.status < 400) {
+							var result = JSON.parse(xhrId.responseText);
+							if(result["result"] == "false") {
+								divs[0].innerHTML = "";
+								idCheck = true;
+								return;
+							} else {
+								divs[0].innerHTML = "이미 있는 아이디입니다.";
+							}
+						} else {
+							alert('error' + xhrId.status);	//error
+						}
+					}
+				}
+				xhrId.onreadystatechange = isMemberIdCallBackMethod;
+				var url = "isMemberIdAction?id=" + getTag("id").value;
+				xhrId.open("get", url);
+				xhrId.send();	
 			} else {
 				divs[0].innerHTML = "아이디는 5~16자";
 			}
 			idCheck = false;
+		}
+		var pwCheck = function(){
+			if (getTag("pw2").value == getTag("pw1").value) {
+				divs[2].innerHTML = "";
+			} else {
+				divs[2].innerHTML = "비밀번호가 서로 다릅니다.";
+			}
 		}
 		getTag("pw1").onkeyup = function() {
 			if (getTag("pw1").value.length >= 8
@@ -194,13 +165,10 @@ div {
 			} else {
 				divs[1].innerHTML = "비밀번호는 8~20자";
 			}
+			pwCheck();
 		}
 		getTag("pw2").onkeyup = function() {
-			if (getTag("pw2").value == getTag("pw1").value) {
-				divs[2].innerHTML = "";
-			} else {
-				divs[2].innerHTML = "비밀번호가 서로 다릅니다.";
-			}
+			pwCheck();
 		}
 		getTag("name").onkeyup = function() {
 			if (getTag("name").value.length >= 2
@@ -213,7 +181,27 @@ div {
 		getTag("nickname").onkeyup = function() {
 			if (getTag("nickname").value.length >= 2
 					&& getTag("nickname").value.length <= 20) {
-				divs[4].innerHTML = "";
+				var xhrNick = new XMLHttpRequest();
+				var isNicknameCallBackMethod = function(){
+					if(xhrNick.readyState == 4) {
+						if(xhrNick.status >= 200 && xhrNick.status < 400) {
+							var result = JSON.parse(xhrNick.responseText);
+							if(result["result"] == "false") {
+								divs[4].innerHTML = "";
+								nickCheck = true;
+								return;
+							} else {
+								divs[4].innerHTML = "이미 있는 닉네임입니다.";
+							}
+						} else {
+							alert('error' + xhrNick.status);	//error
+						}
+					}
+				}
+				xhrNick.onreadystatechange = isNicknameCallBackMethod;
+				var url = "isNicknameAction?nickname=" + getTag("nickname").value;
+				xhrNick.open("get", url);
+				xhrNick.send();	
 			} else {
 				divs[4].innerHTML = "닉네임은 2~20자";
 			}

@@ -14,11 +14,11 @@ import java.util.Map;
 
 public class MemberDAO {
 	private Connection conn;
-	public MemberDAO() throws ClassNotFoundException, SQLException{
-		Class.forName("oracle.jdbc.OracleDriver"); 
-		String uri="jdbc:oracle:thin:@127.0.0.1:1521:XE";
-		String id="hr"; String pw="hr";
-		conn=DriverManager.getConnection(uri, id, pw);
+	
+//	public MemberDAO(){}
+	
+	public MemberDAO(Connection conn) throws ClassNotFoundException, SQLException{
+		this.conn = conn;
 	}
 	
 	public boolean isMemberId(String id) {
@@ -137,7 +137,6 @@ public class MemberDAO {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-			
 		return result;
 	}
 

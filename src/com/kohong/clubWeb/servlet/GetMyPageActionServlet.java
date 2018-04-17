@@ -1,6 +1,7 @@
 package com.kohong.clubWeb.servlet;
 
 import java.io.IOException;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -14,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.kohong.clubWeb.model.ConnectionPool;
 import com.kohong.clubWeb.model.MemberDAO;
 
 @WebServlet("/getMyPageAction")
@@ -26,7 +28,8 @@ public class GetMyPageActionServlet extends HttpServlet {
 		List<String> clubNames = null;
 		Collection<Map<String, String>> clubInfos = new ArrayList();
 		try {
-			dao = new MemberDAO();
+			Connection conn = ConnectionPool.getConnection();
+			dao = new MemberDAO(conn);
 			clubNames = dao.getMyJoinedClubs(id);
 			for(String clubName: clubNames){
 				Map<String, String> map= dao.getClubInfo(clubName);

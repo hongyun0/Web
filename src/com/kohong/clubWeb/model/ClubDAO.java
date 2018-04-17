@@ -12,15 +12,10 @@ import java.util.List;
 public class ClubDAO {
 	private Connection conn;
 
-	public ClubDAO() throws ClassNotFoundException, SQLException {		
-			connect();		
-	}
-	private void connect() throws ClassNotFoundException, SQLException {
-		Class.forName("oracle.jdbc.OracleDriver");
-
-		String url="jdbc:oracle:thin:@127.0.0.1:1521:XE";
-		String id="hr"; String pw="hr";
-		conn=DriverManager.getConnection(url,id,pw);
+//	public ClubDAO(){}
+	
+	public ClubDAO(Connection conn) throws ClassNotFoundException, SQLException {		
+		this.conn = conn;
 	}
 	
 	public boolean isClubName(String clubName) {
@@ -101,6 +96,7 @@ public class ClubDAO {
 		String sql = "insert into clubs (club_name, phone_num, email, category, limit, captain_id, creater_id) values (?, ?, ?, ?, ?, ?, ?)";
 		boolean result = false;
 		try {
+			conn.setAutoCommit(false);
 			PreparedStatement pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, clubName);
 			pstmt.setString(2, phoneNumber);
@@ -114,11 +110,18 @@ public class ClubDAO {
 				result = true;
 			}
 			pstmt.close();	
-			MemberDAO dao = new MemberDAO();
+			MemberDAO dao = new MemberDAO(conn);
 			dao.clubJoin(createrId, clubName);
 			dao.clubJoin(captainId, clubName);
+			conn.commit();
 		} catch (ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
+		} finally {
+			try {
+				conn.setAutoCommit(true);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
 			
 		return result;

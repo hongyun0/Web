@@ -1,6 +1,7 @@
 package com.kohong.clubWeb.servlet;
 
 import java.io.IOException;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Map;
 
@@ -11,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.kohong.clubWeb.model.ClubDAO;
+import com.kohong.clubWeb.model.ConnectionPool;
 
 @WebServlet("/clubCreateAction")
 public class ClubCreateActionServlet extends HttpServlet {
@@ -20,6 +22,7 @@ public class ClubCreateActionServlet extends HttpServlet {
 		boolean result = false;
 		String id = (String) request.getSession().getAttribute("id");
 		try {
+			Connection conn = ConnectionPool.getConnection();
 			String category = inputs.get("field")[0];
 			if(inputs.get("field")[0] == "직접입력"){
 				category = inputs.get("fieldInput")[0];
@@ -31,7 +34,7 @@ public class ClubCreateActionServlet extends HttpServlet {
 			}
 
 			//System.out.println(inputs.get("clubName")[0]+"/"+ inputs.get("telefront")[0] + inputs.get("teleback")[0]+"/"+inputs.get("email")[0]+"/"+category+"/"+inputs.get("limit")[0]+"/"+inputs.get("id")[0]+"/"+ id);
-			result = new ClubDAO().createClub(inputs.get("clubName")[0], telefront + inputs.get("teleback")[0], inputs.get("email")[0], category, inputs.get("limit")[0], inputs.get("id")[0], id);
+			result = new ClubDAO(conn).createClub(inputs.get("clubName")[0], telefront + inputs.get("teleback")[0], inputs.get("email")[0], category, inputs.get("limit")[0], inputs.get("id")[0], id);
 		} catch (ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
 		}

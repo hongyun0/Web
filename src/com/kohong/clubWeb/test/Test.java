@@ -2,6 +2,7 @@ package com.kohong.clubWeb.test;
 
 import java.time.LocalDate;
 
+
 public class Test {
 	public static void main(String[] args) {
 		LocalDate now = LocalDate.now();
@@ -19,5 +20,6 @@ public class Test {
 		}
 		String today = String.valueOf(now.getYear()) + month + day;
 		System.out.println(today);
+		
 	}
 }

@@ -1,6 +1,7 @@
 package com.kohong.clubWeb.servlet;
 
 import java.io.IOException;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.kohong.clubWeb.model.ClubDAO;
+import com.kohong.clubWeb.model.ConnectionPool;
 
 @WebServlet("/getCateClubsAction")
 public class GetCateClubsActionServlet extends HttpServlet {
@@ -21,7 +23,8 @@ public class GetCateClubsActionServlet extends HttpServlet {
 		
 		List<String> result = new ArrayList();
 		try {
-			result = new ClubDAO().getCateClubs(category);
+			Connection conn = ConnectionPool.getConnection();
+			result = new ClubDAO(conn).getCateClubs(category);
 		} catch (ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
 		}

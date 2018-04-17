@@ -1,6 +1,7 @@
 package com.kohong.clubWeb.servlet;
 
 import java.io.IOException;
+import java.sql.Connection;
 import java.sql.SQLException;
 
 import javax.servlet.ServletException;
@@ -9,6 +10,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.kohong.clubWeb.model.ConnectionPool;
 import com.kohong.clubWeb.model.MemberDAO;
 
 @WebServlet("/isMemberIdAction")
@@ -18,7 +20,8 @@ public class IsMemberIdActionServlet extends HttpServlet {
 		String id = request.getParameter("id");
 		boolean result = false;
 		try {
-			result = new MemberDAO().isMemberId(id);
+			Connection conn = ConnectionPool.getConnection();
+			result = new MemberDAO(conn).isMemberId(id);
 		} catch (ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
 		}

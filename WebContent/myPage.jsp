@@ -15,7 +15,7 @@
 	<h4>
 		<i>가입한 동아리</i>
 	</h4>
-	<table>
+	<table border="1">
 		
 	
 	</table>

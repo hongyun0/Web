@@ -1,6 +1,7 @@
 package com.kohong.clubWeb.servlet;
 
 import java.io.IOException;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
@@ -12,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.kohong.clubWeb.model.ConnectionPool;
 import com.kohong.clubWeb.model.MemberDAO;
 
 
@@ -23,9 +25,11 @@ public class LoginActionServlet extends HttpServlet {
 		String id = request.getParameter("id");
 		String pw = request.getParameter("pw");
 
+
 		Map<String, String> result = new HashMap();
 		try {
-			result=new MemberDAO().login(id, pw);
+			Connection conn = ConnectionPool.getConnection();
+			result=new MemberDAO(conn).login(id, pw);
 		} catch (ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
 		}
