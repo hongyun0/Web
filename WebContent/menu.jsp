@@ -6,17 +6,19 @@
 <head>
 <meta charset="UTF-8">
 <title>Menu</title>
+<style>
+	body {
+		text-align: center;
+	}
+</style>
 <script>
 	document.querySelector("#pageTitle").innerHTML = "Menu";
 </script>
 </head>
 <body>
-	<ul>
-		<li><a href='join.jsp'>회원가입</a></li>
-		<li><a href='login.jsp'>로그인</a></li>
-		<li><a href='clubCreate.jsp'>동아리개설</a></li>
-		<li><a href='clubList.jsp'>동아리목록</a></li>
-		<li><a href='myPage.jsp'>My Page</a></li>
-	</ul>
+		<a href='controller?cmd=clubCreateUI'>동아리개설</a><br>
+		<a href='controller?cmd=clubListUI'>동아리목록</a><br>
+		<a href='controller?cmd=myPageUI'>My Page</a><br>
+		<a href="controller?cmd=logoutAction">로그아웃</a>
 </body>
 </html>

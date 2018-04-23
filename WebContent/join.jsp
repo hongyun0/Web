@@ -5,19 +5,35 @@
 <html>
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="jquery-3.3.1.js"></script>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<link rel="stylesheet" href="/resources/demos/style.css">
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+ <script>
+  $( function() {
+    $( ".widget input[type=submit], .widget a, .widget button" ).button();
+  } );
+  </script>
 <title>회원가입</title>
 <style>
-div {
-	font-size: 10pt;
-	color: red;
-}
+	body {
+		text-align: center;
+	}
+	
+	div {
+		font-size: 10pt;
+		color: red;
+	}
 </style>
+<script src="jquery-3.3.1.js"></script>
 <script>
 	document.querySelector("#pageTitle").innerHTML = "회원가입";
 </script>
 </head>
 <body>
-	<form method="get" action="joinAction">
+	<nav id="all">
 	<input name="id" id="id" placeholder="아이디" required="required">
 	<br>
 	<div></div>
@@ -33,23 +49,23 @@ div {
 	<input name="nickname" placeholder="닉네임" id="nickname" required="required">
 	<br>
 	<div></div>
-	<input type="radio" name="gender" checked="checked" value="M" id="genderM">남자
-	<input type="radio" name="gender" value="F" id="genderF">여자
-	<br> 생년월일
+	<input type="radio" name="gender" checked="checked" value="M" id="genderM" onclick="getGender()">남자
+	<input type="radio" name="gender" value="F" id="genderF" onclick="getGender()">여자
+	<br>
 	<select name="birthyear" id="birthyear" required="required">
 	</select>
 	<select name="birthmonth" id="birthmonth" required="required">
 	</select>
 	<select name="birthday" id="birthday" required="required">
-		<option value="">선택</option>
+		<option value="">일</option>
 	</select>
-	<br> 거주지역
+	<br>
 	<select name="city" id="city" required="required">
 	</select>
 	<br>
 	<select name="telefront" id="telefront" required="required">
 	</select>
-	<input name="teleback" id="teleback" placeholder="번호입력" required="required">
+	<input name="teleback" id="teleback" placeholder="휴대폰 번호" required="required">
 	<br>
 	<div></div>
 	<input name="email" id="email" placeholder="이메일 주소" required="required">
@@ -59,68 +75,30 @@ div {
 	<select name="field" id="field">
 	</select>
 	<select name="club" id="club">
-		<option value="">선택</option>
+		<option value="">동아리명선택</option>
 	</select>
 	<br>
 	<br>
-	<input type="button" value="회원가입" id="join" >
-	<button>취소</button>
-	</form>
-	
+	<input type="button" value="회원가입" id="join" class="ui-button ui-widget ui-corner-all">
+	<button class="ui-button ui-widget ui-corner-all">취소</button>
+	</nav>
 	<script type="text/javascript">
 		// id로 태그가져오는 메서드
 		var getTag = function(id) {
 			return document.querySelector("#" + id);
 		}
 
-		//중복확인 여부
-		var idCheck = false;
-		var nickCheck = false;
-		
-		//버튼 onclick
 		var divs = document.querySelectorAll("div");
 				
-		getTag("join").onclick = function(){
-			var check = true;
-			var selects = document.querySelectorAll("select");
-			for (var i = 0; i < 7; i++) {
-				if (selects[i].value == "선택") {
-					check = false;
-				}
-			}
-			if (check) {
-				var inputs = document.querySelectorAll("input");
-				for (i in inputs) {
-					if (inputs[i].value == "") {
-						check = false;
-					}
-				}
-			}
-
-			if (check) {
-				for (var i = 0; i < 7; i++) {
-					if (divs[i].innerHTML != "") {
-						check = false;
-					}
-				}
-			}
-			if (check) {
-				if (!idCheck && nickCheck) {
-					check = false;
-				}
-			}
-			if (check) {
-				getTag("join").type = "submit";
-				getTag("join").onclick();
+		var genderValue = "M";
+		var getGender = function(){
+			if(getTag("genderM").checked) {
+				genderValue = "M";
 			} else {
-				alert('입력하신 정보를 다시 확인해주세요.');
+				genderValue = "F";
 			}
 		}
-
-		document.querySelector("button").onclick = function() {
-			alert('정말 취소하시겠습니까?');
-		}
-
+		
 		//input 알림문구 div에 표시
 		getTag("id").onkeyup = function() {
 			if (getTag("id").value.length >= 5
@@ -132,7 +110,6 @@ div {
 							var result = JSON.parse(xhrId.responseText);
 							if(result["result"] == "false") {
 								divs[0].innerHTML = "";
-								idCheck = true;
 								return;
 							} else {
 								divs[0].innerHTML = "이미 있는 아이디입니다.";
@@ -143,7 +120,7 @@ div {
 					}
 				}
 				xhrId.onreadystatechange = isMemberIdCallBackMethod;
-				var url = "isMemberIdAction?id=" + getTag("id").value;
+				var url = "controller?cmd=isMemberIdAction&id=" + getTag("id").value;
 				xhrId.open("get", url);
 				xhrId.send();	
 			} else {
@@ -188,7 +165,6 @@ div {
 							var result = JSON.parse(xhrNick.responseText);
 							if(result["result"] == "false") {
 								divs[4].innerHTML = "";
-								nickCheck = true;
 								return;
 							} else {
 								divs[4].innerHTML = "이미 있는 닉네임입니다.";
@@ -199,7 +175,7 @@ div {
 					}
 				}
 				xhrNick.onreadystatechange = isNicknameCallBackMethod;
-				var url = "isNicknameAction?nickname=" + getTag("nickname").value;
+				var url = "controller?cmd=isNicknameAction&nickname=" + getTag("nickname").value;
 				xhrNick.open("get", url);
 				xhrNick.send();	
 			} else {
@@ -224,7 +200,9 @@ div {
 		}
 
 		//select에 option 집어넣는 메서드 + '먼저 선택하세요'
-		var choice = "<option value=\"\">선택</option>"
+		var choice = function(flag){
+			return "<option value=\"\">"+flag+"</option>";
+		}
 		var list = "";
 		var addOpt = function(option) {
 			return "<option value="+ option + ">" + option + "</option>";
@@ -232,7 +210,7 @@ div {
 		for (var i = 2018; i >= 1920; i--) {
 			list += addOpt(i);
 		}
-		getTag("birthyear").innerHTML = choice + list;
+		getTag("birthyear").innerHTML = choice("생년") + list;
 
 		list = "";
 		for (var i = 1; i <= 12; i++) {
@@ -241,7 +219,7 @@ div {
 			}
 			list += addOpt(i);
 		}
-		getTag("birthmonth").innerHTML = choice + list;
+		getTag("birthmonth").innerHTML = choice("월") + list;
 
 		var dayOption = function() {
 			list = "";
@@ -265,7 +243,7 @@ div {
 				}
 				list += addOpt(i);
 			}
-			getTag("birthday").innerHTML = choice + list;
+			getTag("birthday").innerHTML = choice("일") + list;
 		}
 		getTag("birthmonth").onchange = function() {
 			dayOption();
@@ -282,14 +260,14 @@ div {
 		var citiesCallBackMethod = function(){
 			if(xhrCity.readyState == 4) {
 				if(xhrCity.status >= 200 && xhrCity.status < 400) {
-					getTag("city").innerHTML = choice + xhrCity.responseText;
+					getTag("city").innerHTML = choice("활동지역선택") + xhrCity.responseText;
 				} else {
 					alert('error' + xhrCity.status);	//error
 				}
 			}
 		}
 		xhrCity.onreadystatechange = citiesCallBackMethod;
-		var url = "getCitiesAction"
+		var url = "controller?cmd=getCitiesAction"
 		xhrCity.open("get", url);
 		xhrCity.send();	
 		
@@ -298,36 +276,36 @@ div {
 		var categoriesCallBackMethod = function(){
 			if(xhrCate.readyState == 4) {
 				if(xhrCate.status >= 200 && xhrCate.status < 400) {
-					getTag("field").innerHTML = choice + "<option value=\"none\">해당없음</option>" + xhrCate.responseText;
+					getTag("field").innerHTML = choice("분야선택") + "<option value=\"none\">해당없음</option>" + xhrCate.responseText;
 				} else {
 					alert('error' + xhrCate.status);	//error
 				}
 			}
 		}
 		xhrCate.onreadystatechange = categoriesCallBackMethod;
-		var url = "getCategoriesAction"
+		var url = "controller?cmd=getCategoriesAction"
 		xhrCate.open("get", url);
 		xhrCate.send();	
 
 
-		getTag("field").onchange = function() {
+		getTag("field").onclick = function() {
 			if(getTag("field").value != "") {
 				var xhrField = new XMLHttpRequest();
 				var categoriesCallBackMethod = function(){
 					if(xhrField.readyState == 4) {
 						if(xhrField.status >= 200 && xhrField.status < 400) {
-							getTag("club").innerHTML = choice + xhrField.responseText;
+							getTag("club").innerHTML = choice("동아리명선택") + xhrField.responseText;
 						} else {
 							alert('error' + xhrField.status);	//error
 						}
 					}
 				}
 				xhrField.onreadystatechange = categoriesCallBackMethod;
-				var url = "getCateClubsAction?category=" + getTag("field").value;
+				var url = "controller?cmd=getCateClubsAction&category=" + getTag("field").value;
 				xhrField.open("get", url);
 				xhrField.send();	
 			} else {
-				getTag("club").innerHTML = choice;
+				getTag("club").innerHTML = choice("동아리명선택");
 			}
 			
 		}
@@ -340,12 +318,69 @@ div {
 
 		list = addOpt("010") + addOpt("011") + addOpt("016") + addOpt("017")
 				+ addOpt("018") + addOpt("019");
-		getTag("telefront").innerHTML = choice + list;
+		getTag("telefront").innerHTML = choice("선택") + list;
 
 		getTag("teleback").onclick = function() {
 			if (getTag("telefront").value == "") {
 				alert('앞자리를 먼저 선택해주세요.')
 			}
+		}
+		
+		getTag("join").onclick = function(){
+			var check = true;
+			var selects = document.querySelectorAll("select");
+			for (var i = 0; i < 7; i++) {
+				if (selects[i].value == "") {
+					check = false;
+				}
+			}
+			if (check) {
+				var inputs = document.querySelectorAll("input");
+				for (i in inputs) {
+					if (inputs[i].value == "") {
+						check = false;
+					}
+				}
+			}
+
+			if (check) {
+				for (var i = 0; i < 7; i++) {
+					if (divs[i].innerHTML != "") {
+						check = false;
+					}
+				}
+			}
+			if (check) {
+				$.ajax({
+					url : "controller?cmd=joinAction",
+					data : {
+						id : $("#id").val(),
+						pw : $("#pw1").val(),
+						name : $("#name").val(),
+						nickname : $("#nickname").val(),
+						gender : genderValue,
+						birthyear : $("#birthyear").val(),
+						birthmonth : $("#birthmonth").val(),
+						birthday : $("#birthday").val(),
+						city : $("#city").val(),
+						telefront : $("#telefront").val(),
+						teleback : $("#teleback").val(),
+						email : $("#email").val(),
+						field : $("#field").val(),
+						club : $("#club").val()
+						},
+					success : function(results) {
+						$("#all").html(results);
+					} 
+				});
+			} else {
+				alert('입력하신 정보를 다시 확인해주세요.');
+			}
+		}
+
+		document.querySelector("button").onclick = function() {
+			alert('정말 취소하시겠습니까?');
+			
 		}
 	</script>
 </body>

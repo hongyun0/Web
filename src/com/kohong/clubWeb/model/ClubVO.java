@@ -1,10 +1,10 @@
 package com.kohong.clubWeb.model;
 
 public class ClubVO {
-private	String clubName , phoneNumber, email, category, limit, captainId, createrId;
+private	String clubName , phoneNumber, email, category, limit, captainId, createrId, createDate, memberCount;
 
 public ClubVO(String clubName, String phoneNumber, String email, String category, String limit, String captainId,
-		String createrId) {
+		String createrId, String createDate, String memberCount) {
 	this.clubName = clubName;
 	this.phoneNumber = phoneNumber;
 	this.email = email;
@@ -12,6 +12,16 @@ public ClubVO(String clubName, String phoneNumber, String email, String category
 	this.limit = limit;
 	this.captainId = captainId;
 	this.createrId = createrId;
+	this.createDate = createDate;
+	this.memberCount = memberCount;
+}
+
+public String getMemberCount() {
+	return memberCount;
+}
+
+public void setMemberCount(String memberCount) {
+	this.memberCount = memberCount;
 }
 
 public String getClubName() {
@@ -70,6 +80,15 @@ public void setCreaterId(String createrId) {
 	this.createrId = createrId;
 }
 
+public String getCreateDate() {
+	return createDate;
+}
+
+public void setCreateDate(String createDate) {
+	this.createDate = createDate;
+}
+
+
 @Override
 public int hashCode() {
 	final int prime = 31;
@@ -99,7 +118,6 @@ public boolean equals(Object obj) {
 public String toString() {
 	return clubName + " " + phoneNumber + " " + email + " " + category + " " + limit + " " + captainId + " " + createrId;
 }
-
 
 
 

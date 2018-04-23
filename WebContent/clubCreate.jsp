@@ -7,16 +7,32 @@
 <html>
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="jquery-3.3.1.js"></script>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<link rel="stylesheet" href="/resources/demos/style.css">
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+ <script>
+  $( function() {
+    $( ".widget input[type=submit], .widget a, .widget button" ).button();
+  } );
+  </script>
 <title>동아리개설</title>
 <style type="text/css">
-div {
-	font-size: 10pt;
-	color: blue;
-}
-b {
-	font-size: 9pt;
-	color: skyblue;
-}
+	body {
+		text-align: center;
+	}
+	
+	div {
+		font-size: 10pt;
+		color: red;
+	}
+	
+	b {
+		font-size: 9pt;
+		color: skyblue;
+	}
 </style>
 <script src="jquery-3.3.1.js"></script>
 <script type="text/javascript">
@@ -26,17 +42,15 @@ b {
 <body>
 	<nav id="all">
 	<input name="clubName" id="clubName" placeholder="동아리명">
-	<button id="nameCheckBtn" disabled="disabled">중복확인</button>
 	<br>
 	<div></div>
 	<b>본인</b>
 	<input type="checkbox" class="Checkbox">
-	<br>
-	<input name="id" id="id" placeholder="대표아이디">
-	<button id="idCheckBtn" disabled="disabled">확인</button>
+	<input name="id" id="id" placeholder="대표자 아이디">
 	<div></div>
 	<b>본인</b>
 	<input type="checkbox" class="Checkbox">
+	&nbsp;&nbsp;&nbsp;&nbsp;
 	<input type="radio" checked="checked" value="landline" id="teleTypel" name="teleType">
 	유선
 	<input type="radio" value="mobile" id="teleTypem" name="teleType">
@@ -45,30 +59,25 @@ b {
 	<select name="telefront" id="telefront" required="required">
 		<option value="">선택</option>
 	</select>
-	<input name="teleback" id="teleback" placeholder="번호 입력">
+	<input name="teleback" id="teleback" placeholder="대표 번호">
 	<div></div>
 	<b>본인</b>
 	<input type="checkbox" class="Checkbox">
-	<br>
 	<input name="email" id="email" placeholder="대표 이메일 ">
 	<div></div>
-	분야
 	<select name="field" id="field">
 	</select>
-	<input name="fieldInput" id="fieldInput" placeholder="분야입력" hidden="true">
+	<input name="fieldInput" id="fieldInput" placeholder="분야 입력" hidden="true">
 	<div></div>
 	인원제한
-	<input name="limit" id="limit" size="1">명
+	<input type="checkbox" class="Checkbox">
+	<input name="limit" id="limit" size="1" disabled="disabled">명
 	<div></div>
 	<br>
-	<input type="button" value="개설신청" id="create">
-	<button id="resetBtn">취소</button>
+	<input type="button" value="개설신청" id="create" class="ui-button ui-widget ui-corner-all">
+	<button id="resetBtn" class="ui-button ui-widget ui-corner-all">취소</button>
 	</nav>
 	<script type="text/javascript">
-		//중복확인 여부
-		var clubNameCheck = false;
-		var idCheck = false;
-		
 		// id로 태그가져오는 메서드
 		var getTag = function(id) {
 			return document.querySelector("#" + id);
@@ -79,25 +88,56 @@ b {
 		getTag("clubName").onkeyup = function() {
 			if (getTag("clubName").value.length >= 2
 					&& getTag("clubName").value.length <= 16) {
-				divs[0].innerHTML = "";
-				getTag("nameCheckBtn").disabled = "";
+				var xhrclub = new XMLHttpRequest();
+				var isClubnameCallBackMethod = function(){
+					if(xhrclub.readyState == 4) {
+						if(xhrclub.status >= 200 && xhrclub.status < 400) {
+							var result = JSON.parse(xhrclub.responseText);
+							if(result["result"] == "false") {
+								divs[0].innerHTML = "";
+							} else {
+								divs[0].innerHTML = '이미 있는 동아리명입니다.';
+							}
+						} else {
+							alert('error' + xhrclub.status);	//error
+						}
+					}
+				}
+				xhrclub.onreadystatechange = isClubnameCallBackMethod;
+				var url = "controller?cmd=isClubNameAction&clubName=" + getTag("clubName").value;
+				xhrclub.open("get", url);
+				xhrclub.send();	
 			} else {
 				divs[0].innerHTML = "동아리 이름은 2~16자";
-				getTag("nameCheckBtn").disabled = true;
 			}
-			 clubNameCheck = false;
 		}
 
 		getTag("id").onkeyup = function() {
 			if (getTag("id").value.length >= 5
 					&& getTag("id").value.length <= 16) {
-				divs[1].innerHTML = "";
-				getTag("idCheckBtn").disabled = "";
+				var xhrId = new XMLHttpRequest();
+				var isMemberIdCallBackMethod = function(){
+					if(xhrId.readyState == 4) {
+						if(xhrId.status >= 200 && xhrId.status < 400) {
+							var result = JSON.parse(xhrId.responseText);
+							console.log(result["result"]);
+							if(result["result"] == "true") {
+								divs[1].innerHTML = "";
+							} else {
+								divs[1].innerHTML = '입력한 아이디를 다시 확인해주세요.';
+							}
+						} else {
+							alert('error' + xhrId.status);	//error
+						}
+					}
+				}
+				xhrId.onreadystatechange = isMemberIdCallBackMethod;
+				var url = "controller?cmd=isMemberIdAction&id=" + getTag("id").value;
+				xhrId.open("get", url);
+				xhrId.send();	
 			} else {
 				divs[1].innerHTML = "아이디는 5~16자";
-				getTag("idCheckBtn").disabled = true;
 			}
-			 idCheck = false;
 		}
 
 		getTag("teleback").onkeyup = function() {
@@ -123,65 +163,6 @@ b {
 			} else {
 				divs[5].innerHTML = "인원은 3~999명 입니다.";
 			}
-		}
-
-		//버튼 onclick
-		getTag("nameCheckBtn").onclick = function() {
-			if(getTag("clubName").value != "") {
-				var xhrclub = new XMLHttpRequest();
-				var isClubnameCallBackMethod = function(){
-					if(xhrclub.readyState == 4) {
-						if(xhrclub.status >= 200 && xhrclub.status < 400) {
-							var result = JSON.parse(xhrclub.responseText);
-							if(result["result"] == "false") {
-								alert('사용할 수 있는 동아리명입니다.');
-								clubNameCheck = true;
-								divs[0].innerHTML = "";
-							} else {
-								alert('이미 있는 동아리명입니다.');
-							}
-						} else {
-							alert('error' + xhrclub.status);	//error
-						}
-					}
-				}
-				xhrclub.onreadystatechange = isClubnameCallBackMethod;
-				var url = "isClubNameAction?clubName=" + getTag("clubName").value;
-				xhrclub.open("get", url);
-				xhrclub.send();	
-			} else {
-				alert('동아리명을 입력해주세요.');
-			}
-		}
-		getTag("idCheckBtn").onclick = function() {
-			if(getTag("id").value != "") {
-				var xhrId = new XMLHttpRequest();
-				var isMemberIdCallBackMethod = function(){
-					if(xhrId.readyState == 4) {
-						if(xhrId.status >= 200 && xhrId.status < 400) {
-							var result = JSON.parse(xhrId.responseText);
-							if(result["result"] == "true") {
-								alert('아이디가 확인되었습니다.');
-								idCheck = true;
-								divs[1].innerHTML = "";
-							} else {
-								alert('입력한 아이디를 다시 확인해주세요.');
-							}
-						} else {
-							alert('error' + xhrId.status);	//error
-						}
-					}
-				}
-				xhrId.onreadystatechange = isMemberIdCallBackMethod;
-				var url = "isMemberIdAction?id=" + getTag("id").value;
-				xhrId.open("get", url);
-				xhrId.send();	
-			} else {
-				alert('대표아이디를 입력해주세요.');
-			}
-		}
-		getTag("resetBtn").onclick = function() {
-			alert('정말 취소하시겠습니까?');
 		}
 
 		//본인선택버튼
@@ -210,7 +191,7 @@ b {
 					}
 				}
 				xhr.onreadystatechange = getMyPhoneCallBackMethod;
-				var url = "getMyPhoneAction?id=" + "<%=id%>";
+				var url = "controller?cmd=getMyPhoneAction&id=" + "<%=id%>";
 				xhr.open("get", url);
 				xhr.send();	
 				getTag("teleTypem").checked = true;
@@ -247,7 +228,7 @@ b {
 					}
 				}
 				xhr.onreadystatechange = getMyEmailCallBackMethod;
-				var url = "getMyEmailAction?id=" + "<%=id%>";
+				var url = "controller?cmd=getMyEmailAction&id=" + "<%=id%>";
 				xhr.open("get", url);
 				xhr.send();	
 				getTag("email").disabled = "disabled";
@@ -258,30 +239,43 @@ b {
 				getTag("email").value = "";
 			}
 		}
+
+		document.querySelectorAll(".Checkbox")[3].onclick = function() {
+			if (this.checked) {
+				getTag("limit").disabled = "";
+				divs[5].innerHTML = "인원제한을 입력해주세요.";
+			} else {
+				getTag("limit").disabled = "disabled";
+				divs[5].innerHTML = "";
+			}
+		}
 		
 		//select
-		var choice = "<option>선택</option>"
+		var choice = function(flag){
+			return "<option value=\"\">"+flag+"</option>";
+		}
 		var list = "";
 		var addOpt = function(option) {
 			return "<option value="+ option + ">" + option + "</option>";
 		}
+		
 		list = addOpt("02") + addOpt("031") + addOpt("032") + addOpt("041")
 				+ addOpt("042") + addOpt("043");
-		getTag("telefront").innerHTML = choice + list;
+		getTag("telefront").innerHTML = choice("선택") + list;
 
 		getTag("teleTypel").onclick = function() {
 			if (getTag("teleTypel").checked == true) {
 				list = addOpt("02") + addOpt("031") + addOpt("032")
 						+ addOpt("041") + addOpt("042") + addOpt("043");
 			}
-			getTag("telefront").innerHTML = choice + list;
+			getTag("telefront").innerHTML = choice("선택") + list;
 		}
 		getTag("teleTypem").onclick = function() {
 			if (getTag("teleTypem").checked == true) {
 				list = addOpt("010") + addOpt("011") + addOpt("016")
 						+ addOpt("017") + addOpt("018") + addOpt("019");
 			}
-			getTag("telefront").innerHTML = choice + list;
+			getTag("telefront").innerHTML = choice("선택") + list;
 		}
 
 		getTag("teleback").onclick = function() {
@@ -290,14 +284,25 @@ b {
 			}
 		}
 
-		list = addOpt("IT") + addOpt("음식") + addOpt("음악") + addOpt("건강")
-				+ addOpt("직접입력");
-		getTag("field").innerHTML = choice + list;
+		var xhrCate = new XMLHttpRequest();
+		var categoriesCallBackMethod = function(){
+			if(xhrCate.readyState == 4) {
+				if(xhrCate.status >= 200 && xhrCate.status < 400) {
+					getTag("field").innerHTML = choice("분야 선택") + addOpt("직접입력") + xhrCate.responseText;
+				} else {
+					alert('error' + xhrCate.status);	//error
+				}
+			}
+		}
+		xhrCate.onreadystatechange = categoriesCallBackMethod;
+		var url = "controller?cmd=getCategoriesAction"
+		xhrCate.open("get", url);
+		xhrCate.send();	
 
 		getTag("field").onchange = function() {
 			if (getTag("field").value == "직접입력") {
 				getTag("fieldInput").hidden = false;
-
+				divs[4].innerHTML = "분야명을 입력해주세요."
 				getTag("fieldInput").onkeyup = function() {
 					if (getTag("fieldInput").value.length < 11) {
 						divs[4].innerHTML = "";
@@ -316,18 +321,25 @@ b {
 			
 			var selects = document.querySelectorAll("select");
 			for (var i = 0; i < 2; i++) {
-				if (selects[i].value == "선택") {
+				if (selects[i].value == "") {
 					check = false;
 					console.log('select')
 				}
 			}
 			if (check) {
 				var inputs = document.querySelectorAll("input");
-				for (var i = 0; i < 11; i++) {
-					if (inputs[i].hidden != true && inputs[i].id != "limit" && inputs[i].value == "") {
+				for (var i = 0; i < 9; i++) {
+					if (inputs[i].value == "") {
 						console.log(inputs[i])
 						check = false;
 					}
+				}
+			}
+			if (check) {
+				var inputs = document.querySelectorAll("input");
+				if (!inputs[9].hidden && inputs[9].value == "") {
+					console.log(inputs[9]);
+					check = false;
 				}
 			}
 			if (check) {
@@ -338,20 +350,10 @@ b {
 					}
 				}
 			}
-			if (check) {
-				if (!clubNameCheck) {
-					check = false;
-					divs[0].innerHTML = "중복확인 필수";
-				}
-				if(!document.querySelector(".checkbox").checked && !idCheck) {
-					check = false;
-					divs[1].innerHTML = "아이디 확인 필수";
-				}
-			}
 
 			if (check) {
 				$.ajax({
-					url : "clubCreateAction",
+					url : "controller?cmd=clubCreateAction",
 					data : {
 						clubName : $("#clubName").val(),
 						id : $("#id").val(),
@@ -369,6 +371,10 @@ b {
 			} else {
 				alert('입력하신 정보를 다시 확인해주세요.');
 			}
+		}
+		
+		getTag("resetBtn").onclick = function() {
+			alert('정말 취소하시겠습니까?');
 		}
 	</script>
 </body>

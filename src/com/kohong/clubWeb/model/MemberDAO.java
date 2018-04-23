@@ -73,43 +73,52 @@ public class MemberDAO {
 		
 	}
 	
-	public boolean[] join(String id, String pw, String name, String nickname, String gender, String birthDate, String phoneNumber, String email, String city, String clubName){
+	public boolean join(MemberVO vo){
 		String sql = "insert into members (member_id, password, name, nickname, gender, birth_date, phone_num, email, city) values (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-		boolean result[] = new boolean[2];
+		boolean result = false;
+		
 		try {
 			conn.setAutoCommit(false);
 			PreparedStatement pstmt = conn.prepareStatement(sql);
-			pstmt.setString(1, id);
-			pstmt.setString(2, pw);
-			pstmt.setString(3, name);
-			pstmt.setString(4, nickname);
-			pstmt.setString(5, gender);
-			pstmt.setString(6, birthDate);
-			pstmt.setString(7, phoneNumber);
-			pstmt.setString(8, email);
-			pstmt.setInt(9, Integer.parseInt(city));
+			pstmt.setString(1, vo.getId());
+			pstmt.setString(2, vo.getPw());
+			pstmt.setString(3, vo.getName());
+			pstmt.setString(4, vo.getNickname());
+			pstmt.setString(5, vo.getGender());
+			pstmt.setString(6, vo.getBirthDate());
+			pstmt.setString(7, vo.getPhoneNumber());
+			pstmt.setString(8, vo.getEmail());
+			pstmt.setInt(9, Integer.parseInt(vo.getCity()));
 			if(pstmt.executeUpdate() == 1) {
-				result[0] = true;
+				result = true;
 			}
 			pstmt.close();		
-			
-			result[1] = clubJoin(id, clubName);
 		} catch (SQLException e) {
 			e.printStackTrace();
-		} finally {
-			try {
-				conn.setAutoCommit(true);
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
 		}
 			
 		return result;
 		
 	}
 	
+	public void setCommit(){
+		try {
+			conn.commit();
+			conn.setAutoCommit(true);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public boolean clubJoin(String id, String clubName){
+		if(isClubMember(id, clubName)){
+			return false;
+		}
 		String sql = "insert into joined_clubs (joined_num, join_date, club_name, member_id) values (joined_num_seq.nextval,?, ?, ?)";
+		if(isDroppedMember(id, clubName)){
+			sql = "update joined_clubs set flag = 1 , join_date =? where club_name=? and member_id=?";
+		}
+		
 		boolean result = false;
 		try {
 			PreparedStatement pstmt = conn.prepareStatement(sql);
@@ -202,11 +211,32 @@ public class MemberDAO {
 	
 	public List<String> getMyJoinedClubs (String id) {
 		List<String> clubs = new ArrayList<>();
-		String sql = "select club_name from joined_clubs where member_id=?";
+		String sql = "select club_name from (select j.club_name , j.flag, j.member_id, c.captain_id from joined_clubs j , clubs c where j.club_name = c.club_name and j.member_id =?) where captain_id=? ";
 		
 		try {
 			PreparedStatement ps = conn.prepareStatement(sql);
 			ps.setString(1, id);
+			ps.setString(2, id);
+			ResultSet rs = ps.executeQuery();
+			while(rs.next()){
+				clubs.add(rs.getString(1));
+				}	
+			rs.close();
+			ps.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return clubs;
+	}
+
+	public List<String> getMyManagingClubs (String id) {
+		List<String> clubs = new ArrayList<>();
+		String sql = "select club_name from (select j.club_name , j.flag, j.member_id, c.captain_id from joined_clubs j , clubs c where j.club_name = c.club_name and j.member_id =?) where not captain_id=?";
+		
+		try {
+			PreparedStatement ps = conn.prepareStatement(sql);
+			ps.setString(1, id);
+			ps.setString(2, id);
 			ResultSet rs = ps.executeQuery();
 			while(rs.next()){
 				clubs.add(rs.getString(1));
@@ -221,7 +251,7 @@ public class MemberDAO {
 
 	public Map<String, String> getClubInfo(String clubName){
 		Map<String, String> clubInfo = new HashMap<>();
-		String sql = "select category, email, phone_num ,captain_id from clubs where club_name=?";
+		String sql = "select category, email, phone_num ,captain_id, limit from clubs where club_name=?";
 		try {
 			PreparedStatement ps = conn.prepareStatement(sql);
 			ps.setString(1, clubName);
@@ -231,6 +261,7 @@ public class MemberDAO {
 				clubInfo.put("email", rs.getString(2));
 				clubInfo.put("phoneNumber", rs.getString(3));
 				clubInfo.put("captainId", rs.getString(4));
+				clubInfo.put("limit", rs.getString(5));
 				clubInfo.put("count", String.valueOf(getMemberCount(clubName)));
 				clubInfo.put("clubName", clubName);
 			}
@@ -243,25 +274,85 @@ public class MemberDAO {
 		
 	}
 	
-	public int getMemberCount(String clubName){
-		int memberCount = 0;
-		String sql="select member_id from joined_clubs where club_name=?";
-		try {
-			PreparedStatement ps = conn.prepareStatement(sql);
-			ps.setString(1, clubName);
-			ResultSet rs = ps.executeQuery();
-			while(rs.next()){
-				memberCount ++ ;
-			}
-			rs.close();
-			ps.close();
-		} catch (SQLException e) {
-		
-			e.printStackTrace();
-		}
-		return memberCount;
-		
+	 public int getMemberCount(String clubName){
+	      int memberCount = -1;
+	      String sql="select count(member_id) from joined_clubs where club_name=? and flag=1";
+	      try {
+	         PreparedStatement ps = conn.prepareStatement(sql);
+	         ps.setString(1, clubName);
+	         ResultSet rs = ps.executeQuery();
+	         if(rs.next()){
+	            memberCount = rs.getInt(1);
+	         }
+	         rs.close();
+	         ps.close();
+	      } catch (SQLException e) {
+	      
+	         e.printStackTrace();
+	      }
+	      return memberCount;
+	      
+	   
 	}
 	
+	 public boolean isClubMember(String memberId, String clubName){
+		 boolean result = false;
+			String query = "select flag from joined_clubs where member_id = ? and club_name = ?";
+			try {
+				PreparedStatement ps = conn.prepareStatement(query);
+				ps.setString(1, memberId);
+				ps.setString(2, clubName);
+				ResultSet rs = ps.executeQuery();
+				if(rs.next() && rs.getInt(1) == 1) {
+					result= true;
+				}
+				rs.close();
+				ps.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			} 
+
+			return result;
+	 }
+
+	 public boolean isDroppedMember(String memberId, String clubName){
+		 boolean result = false;
+			String query = "select flag from joined_clubs where member_id = ? and club_name = ?";
+			try {
+				PreparedStatement ps = conn.prepareStatement(query);
+				ps.setString(1, memberId);
+				ps.setString(2, clubName);
+				ResultSet rs = ps.executeQuery();
+				if(rs.next() && rs.getInt(1) == 0) {
+					result= true;
+				}
+				rs.close();
+				ps.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			} 
+
+			return result;
+	 }
+
+	public boolean clubDrop(String id, String clubName) {
+		if(!isClubMember(id, clubName)){
+			return false;
+		}
+		String sql = "update joined_clubs set flag = 0 where member_id= ? and club_name= ?";
+		boolean result = false;
+		try {
+			PreparedStatement pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, id);
+			pstmt.setString(2, clubName);
+			if(pstmt.executeUpdate() >= 1) {
+				result = true;
+			}
+			pstmt.close();			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
 	
 }
